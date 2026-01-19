@@ -1,0 +1,51 @@
+{
+  "name": "leknoppix/laravel-view-analyzer",
+  "description": "Analyze view usage in Laravel applications - detect used and unused Blade templates",
+  "keywords": [
+    "laravel",
+    "views",
+    "analyzer",
+    "blade",
+    "templates",
+    "unused-views"
+  ],
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Leknoppix",
+      "email": "contact@lejournaldugers.fr"
+    }
+  ],
+  "require": {
+    "php": "^8.3|^8.4",
+    "illuminate/support": "^11.0|^12.0",
+    "illuminate/console": "^11.0|^12.0",
+    "nikic/php-parser": "^5.0",
+    "symfony/finder": "^7.0"
+  },
+  "require-dev": {
+    "orchestra/testbench": "^9.0",
+    "phpunit/phpunit": "^11.0",
+    "laravel/pint": "^1.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "LaravelViewAnalyzer\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "LaravelViewAnalyzer\\Tests\\": "tests/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "LaravelViewAnalyzer\\ViewAnalyzerServiceProvider"
+      ]
+    }
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true
+}
