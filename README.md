@@ -216,7 +216,7 @@ Licence MIT
 
 ## 👤 Auteur
 
-**Pascal Canadas** - [Le Journal du Gers](https://lejournaldugers.fr)
+**Pascal Canadas**
 
 ## 🤝 Contribution
 
