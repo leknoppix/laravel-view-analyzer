@@ -1,0 +1,19 @@
+includes:
+    - ./vendor/larastan/larastan/extension.neon
+
+parameters:
+    paths:
+        - src
+        - config
+
+    # Level 9 is the highest level
+    level: 5
+
+    ignoreErrors:
+        # Ignore env calls in package config file
+        - "#Called 'env' outside of the config directory#"
+
+    excludePaths:
+        - ./src/ViewAnalyzerServiceProvider.php # Often contains framework specific code that might trigger false positives initially
+
+    tmpDir: build/phpstan

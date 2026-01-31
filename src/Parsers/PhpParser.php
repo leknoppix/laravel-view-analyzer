@@ -13,7 +13,7 @@ class PhpParser implements ParserInterface
 
     public function __construct()
     {
-        $this->parser = (new ParserFactory)->createForNewestSupportedVersion();
+        $this->parser = (new ParserFactory())->createForNewestSupportedVersion();
     }
 
     public function parse(string $content): array
@@ -25,8 +25,8 @@ class PhpParser implements ParserInterface
                 return [];
             }
 
-            $traverser = new NodeTraverser;
-            $traverser->addVisitor(new NameResolver);
+            $traverser = new NodeTraverser();
+            $traverser->addVisitor(new NameResolver());
 
             $traverser->traverse($ast);
 

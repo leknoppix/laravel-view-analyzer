@@ -25,7 +25,7 @@ class AnalysisCache
             return null;
         }
 
-        return Cache::get($this->keyPrefix.$key);
+        return Cache::get($this->keyPrefix . $key);
     }
 
     public function put(string $key, mixed $value): void
@@ -34,7 +34,7 @@ class AnalysisCache
             return;
         }
 
-        Cache::put($this->keyPrefix.$key, $value, $this->ttl);
+        Cache::put($this->keyPrefix . $key, $value, $this->ttl);
     }
 
     public function has(string $key): bool
@@ -43,12 +43,12 @@ class AnalysisCache
             return false;
         }
 
-        return Cache::has($this->keyPrefix.$key);
+        return Cache::has($this->keyPrefix . $key);
     }
 
     public function forget(string $key): void
     {
-        Cache::forget($this->keyPrefix.$key);
+        Cache::forget($this->keyPrefix . $key);
     }
 
     public function flush(): void

@@ -9,8 +9,7 @@ class ViewNameParser implements ParserInterface
 {
     public function __construct(
         protected string $viewsPath
-    ) {
-    }
+    ) {}
 
     public function parse(string $content): array
     {

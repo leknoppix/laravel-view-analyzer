@@ -4,17 +4,21 @@ namespace LaravelViewAnalyzer\Analyzers;
 
 use Illuminate\Support\Collection;
 use LaravelViewAnalyzer\Analyzers\Contracts\AnalyzerInterface;
+use LaravelViewAnalyzer\Detectors\ViewCallDetector;
 use LaravelViewAnalyzer\Results\ViewReference;
 use LaravelViewAnalyzer\Scanners\DirectoryScanner;
 use LaravelViewAnalyzer\Scanners\FileScanner;
 
 class RouteAnalyzer implements AnalyzerInterface
 {
+    protected ViewCallDetector $detector;
+
     protected array $config;
 
     public function __construct(array $config = [])
     {
         $this->config = $config;
+        $this->detector = new ViewCallDetector();
     }
 
     public function analyze(): Collection
@@ -38,6 +42,7 @@ class RouteAnalyzer implements AnalyzerInterface
                 continue;
             }
 
+            // Detect Route::view() shorthand
             if (preg_match_all('/Route::view\s*\([^,]+,\s*[\'"]([^\'"]+)[\'"]/', $content, $matches, PREG_OFFSET_CAPTURE)) {
                 foreach ($matches[1] as $match) {
                     $lineNumber = $fileScanner->getLineNumber($match[1]);
@@ -51,6 +56,28 @@ class RouteAnalyzer implements AnalyzerInterface
                         isDynamic: false
                     ));
                 }
+            }
+
+            // Detect standard view calls in closures or other route code
+            $matches = $this->detector->detect($content);
+
+            foreach ($matches as $match) {
+                $lineNumber = $fileScanner->getLineNumber($match['position']);
+
+                // Avoid double counting if already matched by Route::view pattern
+                // (though Route::view pattern is specific enough that it shouldn't overlap with view() calls)
+                if ($references->contains(fn ($ref) => $ref->sourceFile === $file && $ref->lineNumber === $lineNumber && $ref->viewName === $match['view'])) {
+                    continue;
+                }
+
+                $references->push(new ViewReference(
+                    viewName: $match['view'],
+                    sourceFile: $file,
+                    lineNumber: $lineNumber,
+                    context: 'Route Closure/Callback',
+                    type: 'route',
+                    isDynamic: false
+                ));
             }
         }
 

@@ -27,7 +27,7 @@ class PathHelper
             return static::normalize($path);
         }
 
-        return static::normalize($base.'/'.ltrim($path, '/'));
+        return static::normalize($base . '/' . ltrim($path, '/'));
     }
 
     public static function isAbsolute(string $path): bool

@@ -14,11 +14,10 @@ class ViewsUnusedCommand extends Command
 
     protected $description = 'List all unused/orphaned views';
 
-    public function handle(): int
+    public function handle(ViewAnalyzer $analyzer): int
     {
         $this->info('Finding unused views...');
 
-        $analyzer = new ViewAnalyzer(config('view-analyzer'));
         $result = $analyzer->analyze();
 
         $unusedViews = $result->unusedViews;

@@ -13,7 +13,7 @@ class CacheManager
 
     public function generateKey(string $context): string
     {
-        return md5($context.'_'.filemtime(base_path()));
+        return md5($context . '_' . filemtime(base_path()));
     }
 
     public function clear(): void

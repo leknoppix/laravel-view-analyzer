@@ -5,16 +5,20 @@ namespace LaravelViewAnalyzer;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use LaravelViewAnalyzer\Analyzers\BladeAnalyzer;
+use LaravelViewAnalyzer\Analyzers\CommandAnalyzer;
 use LaravelViewAnalyzer\Analyzers\ComponentAnalyzer;
 use LaravelViewAnalyzer\Analyzers\Contracts\AnalyzerInterface;
 use LaravelViewAnalyzer\Analyzers\ControllerAnalyzer;
 use LaravelViewAnalyzer\Analyzers\MailableAnalyzer;
 use LaravelViewAnalyzer\Analyzers\MiddlewareAnalyzer;
+use LaravelViewAnalyzer\Analyzers\NotificationAnalyzer;
+use LaravelViewAnalyzer\Analyzers\ProviderAnalyzer;
 use LaravelViewAnalyzer\Analyzers\RouteAnalyzer;
 use LaravelViewAnalyzer\Results\AnalysisResult;
 use LaravelViewAnalyzer\Results\UnusedView;
 use LaravelViewAnalyzer\Results\ViewUsage;
 use LaravelViewAnalyzer\Scanners\ViewFileScanner;
+use LaravelViewAnalyzer\Support\PatternMatcher;
 
 class ViewAnalyzer
 {
@@ -36,9 +40,12 @@ class ViewAnalyzer
         $this->addAnalyzer(new ControllerAnalyzer($this->config));
         $this->addAnalyzer(new BladeAnalyzer($this->config));
         $this->addAnalyzer(new MailableAnalyzer($this->config));
+        $this->addAnalyzer(new CommandAnalyzer($this->config));
         $this->addAnalyzer(new ComponentAnalyzer($this->config));
         $this->addAnalyzer(new RouteAnalyzer($this->config));
         $this->addAnalyzer(new MiddlewareAnalyzer($this->config));
+        $this->addAnalyzer(new ProviderAnalyzer($this->config));
+        $this->addAnalyzer(new NotificationAnalyzer($this->config));
     }
 
     public function addAnalyzer(AnalyzerInterface $analyzer): self
@@ -85,9 +92,22 @@ class ViewAnalyzer
     public function findUnusedViews(Collection $viewRegistry, Collection $usedViews): Collection
     {
         $usedViewNames = $usedViews->pluck('viewName')->unique();
+        $ignoredPatterns = $this->config['ignored_views'] ?? [];
 
         return $viewRegistry
-            ->filter(fn ($filePath, $viewName) => ! $usedViewNames->contains($viewName))
+            ->filter(function ($filePath, $viewName) use ($usedViewNames, $ignoredPatterns) {
+                // If it's used, it's not unused
+                if ($usedViewNames->contains($viewName)) {
+                    return false;
+                }
+
+                // If it's ignored via configuration, it's not reported as unused
+                if (PatternMatcher::matchesViewPattern($viewName, $ignoredPatterns)) {
+                    return false;
+                }
+
+                return true;
+            })
             ->map(function ($filePath, $viewName) {
                 return new UnusedView(
                     viewName: $viewName,

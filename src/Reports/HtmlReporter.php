@@ -50,7 +50,7 @@ HTML;
                 '<tr><td>%s</td><td>%d</td><td>%s</td></tr>',
                 htmlspecialchars($view->viewName),
                 $view->referenceCount,
-                implode(', ', array_map(fn ($t) => '<span class="badge badge-success">'.htmlspecialchars($t).'</span>', $view->types))
+                implode(', ', array_map(fn ($t) => '<span class="badge badge-success">' . htmlspecialchars($t) . '</span>', $view->types))
             );
         }
 

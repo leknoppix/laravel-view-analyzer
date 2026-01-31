@@ -18,7 +18,7 @@ class ControllerAnalyzer implements AnalyzerInterface
     public function __construct(array $config = [])
     {
         $this->config = $config;
-        $this->detector = new ViewCallDetector;
+        $this->detector = new ViewCallDetector();
     }
 
     public function analyze(): Collection
@@ -47,12 +47,13 @@ class ControllerAnalyzer implements AnalyzerInterface
 
                 foreach ($matches as $match) {
                     $lineNumber = $fileScanner->getLineNumber($match['position']);
+                    $methodName = $fileScanner->getMethodAtPosition($match['position']);
 
                     $references->push(new ViewReference(
                         viewName: $match['view'],
                         sourceFile: $file,
                         lineNumber: $lineNumber,
-                        context: 'Controller',
+                        context: "Controller::{$methodName}",
                         type: 'controller',
                         isDynamic: false
                     ));

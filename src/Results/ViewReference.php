@@ -11,8 +11,7 @@ class ViewReference
         public string $context,
         public string $type,
         public bool $isDynamic = false
-    ) {
-    }
+    ) {}
 
     public function toArray(): array
     {

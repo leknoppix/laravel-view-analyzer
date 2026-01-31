@@ -34,7 +34,7 @@ class DirectoryScanner implements ScannerInterface
             ->files()
             ->in($this->directory)
             ->name($this->pattern)
-            ->depth('<= '.$this->maxDepth)
+            ->depth('<= ' . $this->maxDepth)
             ->ignoreUnreadableDirs()
             ->followLinks();
 

@@ -17,7 +17,7 @@ class ViewPathResolver
     {
         $relativePath = str_replace('.', '/', $viewName);
 
-        return PathHelper::normalize($viewsPath.'/'.$relativePath.'.blade.php');
+        return PathHelper::normalize($viewsPath . '/' . $relativePath . '.blade.php');
     }
 
     public static function resolveNamespace(string $viewName): array

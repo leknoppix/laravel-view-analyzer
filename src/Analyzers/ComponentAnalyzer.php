@@ -4,6 +4,7 @@ namespace LaravelViewAnalyzer\Analyzers;
 
 use Illuminate\Support\Collection;
 use LaravelViewAnalyzer\Analyzers\Contracts\AnalyzerInterface;
+use LaravelViewAnalyzer\Detectors\ViewCallDetector;
 use LaravelViewAnalyzer\Results\ViewReference;
 use LaravelViewAnalyzer\Scanners\DirectoryScanner;
 use LaravelViewAnalyzer\Scanners\FileScanner;
@@ -12,9 +13,12 @@ class ComponentAnalyzer implements AnalyzerInterface
 {
     protected array $config;
 
+    protected ViewCallDetector $detector;
+
     public function __construct(array $config = [])
     {
         $this->config = $config;
+        $this->detector = new ViewCallDetector();
     }
 
     public function analyze(): Collection
@@ -23,32 +27,35 @@ class ComponentAnalyzer implements AnalyzerInterface
         $componentPath = app_path('View/Components');
         $excludePaths = $this->config['exclude_paths'] ?? [];
 
-        if (is_dir($componentPath)) {
-            $scanner = new DirectoryScanner($componentPath, '*.php', $excludePaths);
-            $files = $scanner->scan();
+        if (! is_dir($componentPath)) {
+            return $references;
+        }
 
-            foreach ($files as $file) {
-                $fileScanner = new FileScanner($file);
-                $content = $fileScanner->readContent();
+        $scanner = new DirectoryScanner($componentPath, '*.php', $excludePaths);
+        $files = $scanner->scan();
 
-                if (! $content) {
-                    continue;
-                }
+        foreach ($files as $file) {
+            $fileScanner = new FileScanner($file);
+            $content = $fileScanner->readContent();
 
-                if (preg_match_all('/return\s+view\s*\(\s*[\'"]([^\'"]+)[\'"]/', $content, $matches, PREG_OFFSET_CAPTURE)) {
-                    foreach ($matches[1] as $match) {
-                        $lineNumber = $fileScanner->getLineNumber($match[1]);
+            if (! $content) {
+                continue;
+            }
 
-                        $references->push(new ViewReference(
-                            viewName: $match[0],
-                            sourceFile: $file,
-                            lineNumber: $lineNumber,
-                            context: 'Component render()',
-                            type: 'component',
-                            isDynamic: false
-                        ));
-                    }
-                }
+            $matches = $this->detector->detect($content);
+
+            foreach ($matches as $match) {
+                $lineNumber = $fileScanner->getLineNumber($match['position']);
+                $methodName = $fileScanner->getMethodAtPosition($match['position']);
+
+                $references->push(new ViewReference(
+                    viewName: $match['view'],
+                    sourceFile: $file,
+                    lineNumber: $lineNumber,
+                    context: "Component::{$methodName}",
+                    type: 'component',
+                    isDynamic: false
+                ));
             }
         }
 

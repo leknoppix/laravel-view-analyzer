@@ -20,36 +20,50 @@ class MiddlewareAnalyzer implements AnalyzerInterface
     public function analyze(): Collection
     {
         $references = collect();
-        $middlewarePath = app_path('Http/Middleware');
-        $excludePaths = $this->config['exclude_paths'] ?? [];
 
-        if (! is_dir($middlewarePath)) {
-            return $references;
+        $scanPaths = $this->config['scan_paths'] ?? [];
+        $middlewarePaths = array_filter($scanPaths, function($path) {
+            return str_contains($path, 'Middleware');
+        });
+
+        if (empty($middlewarePaths) && function_exists('app_path')) {
+            $defaultPath = app_path('Http/Middleware');
+            if (is_dir($defaultPath)) {
+                $middlewarePaths[] = $defaultPath;
+            }
         }
 
-        $scanner = new DirectoryScanner($middlewarePath, '*.php', $excludePaths);
-        $files = $scanner->scan();
+        $excludePaths = $this->config['exclude_paths'] ?? [];
 
-        foreach ($files as $file) {
-            $fileScanner = new FileScanner($file);
-            $content = $fileScanner->readContent();
-
-            if (! $content) {
+        foreach ($middlewarePaths as $path) {
+            if (! is_dir($path)) {
                 continue;
             }
 
-            if (preg_match_all('/view\s*\(\s*[\'"]([^\'"]+)[\'"]/', $content, $matches, PREG_OFFSET_CAPTURE)) {
-                foreach ($matches[1] as $match) {
-                    $lineNumber = $fileScanner->getLineNumber($match[1]);
+            $scanner = new DirectoryScanner($path, '*.php', $excludePaths);
+            $files = $scanner->scan();
 
-                    $references->push(new ViewReference(
-                        viewName: $match[0],
-                        sourceFile: $file,
-                        lineNumber: $lineNumber,
-                        context: 'Middleware',
-                        type: 'middleware',
-                        isDynamic: false
-                    ));
+            foreach ($files as $file) {
+                $fileScanner = new FileScanner($file);
+                $content = $fileScanner->readContent();
+
+                if (! $content) {
+                    continue;
+                }
+
+                if (preg_match_all('/view\s*\(\s*[\'"]([^\'"]+)[\'"]/', $content, $matches, PREG_OFFSET_CAPTURE)) {
+                    foreach ($matches[1] as $match) {
+                        $lineNumber = $fileScanner->getLineNumber($match[1]);
+
+                        $references->push(new ViewReference(
+                            viewName: $match[0],
+                            sourceFile: $file,
+                            lineNumber: $lineNumber,
+                            context: 'Middleware',
+                            type: 'middleware',
+                            isDynamic: false
+                        ));
+                    }
                 }
             }
         }

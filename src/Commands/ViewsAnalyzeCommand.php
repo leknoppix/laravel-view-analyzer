@@ -19,11 +19,10 @@ class ViewsAnalyzeCommand extends Command
 
     protected $description = 'Analyze view usage across the Laravel application';
 
-    public function handle(): int
+    public function handle(ViewAnalyzer $analyzer): int
     {
         $this->info('Analyzing views...');
 
-        $analyzer = new ViewAnalyzer(config('view-analyzer'));
         $result = $analyzer->analyze();
 
         $reporter = $this->getReporter($this->option('format'));
@@ -33,7 +32,9 @@ class ViewsAnalyzeCommand extends Command
             file_put_contents($outputPath, $output);
             $this->info("Report saved to: {$outputPath}");
         } else {
-            $this->line($output);
+            foreach (explode("\n", $output) as $line) {
+                $this->line($line);
+            }
         }
 
         return self::SUCCESS;
@@ -42,10 +43,10 @@ class ViewsAnalyzeCommand extends Command
     protected function getReporter(string $format): mixed
     {
         return match ($format) {
-            'json' => new JsonReporter,
-            'html' => new HtmlReporter,
-            'csv' => new CsvReporter,
-            default => new ConsoleReporter,
+            'json' => new JsonReporter(),
+            'html' => new HtmlReporter(),
+            'csv' => new CsvReporter(),
+            default => new ConsoleReporter(),
         };
     }
 }

@@ -1,109 +1,116 @@
 # Laravel View Analyzer
 
-A powerful Laravel package to analyze view usage in your application. Identify used and unused Blade templates, detect orphaned views, and gain insights into your view architecture.
+[![Dernière Version sur Packagist](https://img.shields.io/packagist/v/leknoppix/laravel-view-analyzer.svg?style=flat-square)](https://packagist.org/packages/leknoppix/laravel-view-analyzer)
+[![Téléchargements Totaux](https://img.shields.io/packagist/dt/leknoppix/laravel-view-analyzer.svg?style=flat-square)](https://packagist.org/packages/leknoppix/laravel-view-analyzer)
+[![Licence](https://img.shields.io/packagist/l/leknoppix/laravel-view-analyzer.svg?style=flat-square)](https://packagist.org/packages/leknoppix/laravel-view-analyzer)
 
-## Features
+Un package Laravel puissant pour analyser l'utilisation des vues dans votre application. Identifiez les templates Blade utilisés et inutilisés, détectez les vues orphelines et obtenez des informations sur l'architecture de vos vues.
 
-- ✅ **Comprehensive Analysis** - Detects views in controllers, Blade files, mailables, components, routes, and middleware
-- ✅ **Multiple Output Formats** - Console tables, JSON, HTML, and CSV reports
-- ✅ **Smart Detection** - Handles `view()`, `View::make()`, `@extends`, `@include`, and Laravel 11+ Mailable patterns
-- ✅ **Unused View Detection** - Find orphaned templates that can be safely removed
-- ✅ **Performance Optimized** - Built-in caching for large projects
-- ✅ **Extensible** - Add custom analyzers for your specific needs
+## 🚀 Fonctionnalités
 
-## Installation
+- ✅ **Analyse Complète** - Détecte les vues dans les contrôleurs, fichiers Blade, mailables, commandes, composants, routes et middlewares
+- ✅ **Formats de Sortie Multiples** - Tableaux console, JSON, HTML et CSV
+- ✅ **Détection Intelligente** - Gère `view()`, `View::make()`, `@extends`, `@include`, et les patterns Mailable Laravel 11+
+- ✅ **Détection de Vues Inutilisées** - Trouvez les templates orphelins qui peuvent être supprimés en toute sécurité
+- ✅ **Performance Optimisée** - Mise en cache intégrée pour les grands projets
+- ✅ **Extensible** - Ajoutez des analyseurs personnalisés pour vos besoins spécifiques
 
-Install via Composer:
+## 📦 Installation
+
+Installez via Composer :
 
 ```bash
 composer require leknoppix/laravel-view-analyzer --dev
 ```
 
-Publish the configuration file:
+Publiez le fichier de configuration :
 
 ```bash
 php artisan vendor:publish --tag=view-analyzer-config
 ```
 
-## Usage
+## 🛠 Utilisation
 
-### Analyze All Views
+### Analyser toutes les vues
 
-Run a complete analysis of your application's views:
+Lancez une analyse complète des vues de votre application :
 
 ```bash
 php artisan views:analyze
 ```
 
-**Example Output:**
+**Exemple de sortie :**
 ```
 ===========================================
-Laravel View Analyzer - Analysis Report
+Laravel View Analyzer - Rapport d'Analyse
 ===========================================
 
-Views Summary:
-  Total Views Found: 382
-  Used Views: 341
-  Unused Views: 41
-  Dynamic/Uncertain: 12
+Résumé des Vues :
+  Total Vues Trouvées : 382
+  Vues Utilisées : 341
+  Vues Inutilisées : 41
+  Dynamique/Incertain : 12
 ```
 
-### List Used Views
+### Lister les vues utilisées
 
-Show all views that are referenced in your codebase:
+Affichez toutes les vues référencées dans votre base de code :
 
 ```bash
 php artisan views:used --show-locations
 ```
 
-**Options:**
-- `--type=controller|blade|mailable|all` - Filter by reference type
-- `--sort=name|count` - Sort order
-- `--min-references=N` - Minimum reference count
-- `--show-locations` - Display file paths and line numbers
+**Options :**
+- `--type=controller|blade|mailable|all` - Filtrer par type de référence
+- `--sort=name|count` - Ordre de tri
+- `--min-references=N` - Nombre minimum de références
+- `--show-locations` - Afficher les chemins de fichiers et numéros de ligne
 
-### Find Unused Views
+### Trouver les vues inutilisées
 
-Identify orphaned templates:
+Identifiez les templates orphelins :
 
 ```bash
 php artisan views:unused --size --suggest-delete
 ```
 
-**Options:**
-- `--path=resources/views/admin` - Filter by specific path
-- `--size` - Show file sizes
-- `--suggest-delete` - Generate delete commands
+**Options :**
+- `--path=resources/views/admin` - Filtrer par chemin spécifique
+- `--size` - Afficher la taille des fichiers
+- `--suggest-delete` - Générer les commandes de suppression
 
-### Export Reports
+### Exporter les rapports
 
-Generate reports in different formats:
+Générez des rapports dans différents formats :
 
 ```bash
-# JSON export
+# Export JSON
 php artisan views:analyze --format=json --output=report.json
 
-# HTML report
+# Rapport HTML
 php artisan views:analyze --format=html --output=public/view-report.html
 
-# CSV export
+# Export CSV
 php artisan views:analyze --format=csv --output=report.csv
 ```
 
-## What Gets Analyzed
+## 🔍 Ce qui est analysé
 
-The package detects views in:
+Le package détecte les vues dans :
 
-1. **Controllers** - `view()`, `View::make()`, `response()->view()`
-2. **Blade Templates** - `@extends`, `@include`, `@includeIf`, `@component`, `@each`
-3. **Mailables** - Laravel 11+ `Content` class and legacy `view()` method
-4. **Components** - Class-based components' `render()` method
-5. **Routes** - `Route::view()` definitions
-6. **Middleware** - View calls and `view()->share()`
+1. **Contrôleurs** - `view()`, `View::make()`, `response()->view()`
+2. **Templates Blade** - `@extends`, `@include`, `@includeIf`, `@component`, `@each`
+3. **Mailables** - Classe `Content` de Laravel 11+ et méthode legacy `view()`
+4. **Notifications** - Méthodes `toMail` et `toMarkdown`
+5. **Commandes** - Appels de vue dans les commandes Artisan
+6. **Composants** - Méthode `render()` des composants basés sur des classes
+7. **Providers** - `Paginator::defaultView()` et `defaultSimpleView()`
+8. **Routes** - Définitions `Route::view()`
+9. **Middleware** - Appels de vue et `view()->share()`
 
-## Configuration
+## ⚙️ Configuration
 
-Edit `config/view-analyzer.php` to customize:
+Editez `config/view-analyzer.php` pour personnaliser :
 
 ```php
 return [
@@ -142,9 +149,9 @@ return [
 ];
 ```
 
-## Advanced Usage
+## 🚀 Utilisation Avancée
 
-### Programmatic Usage
+### Utilisation Programmatique
 
 ```php
 use LaravelViewAnalyzer\ViewAnalyzer;
@@ -152,19 +159,19 @@ use LaravelViewAnalyzer\ViewAnalyzer;
 $analyzer = new ViewAnalyzer(config('view-analyzer'));
 $result = $analyzer->analyze();
 
-// Get used views
+// Obtenir les vues utilisées
 $usedViews = $result->usedViews;
 
-// Get unused views
+// Obtenir les vues inutilisées
 $unusedViews = $result->unusedViews;
 
-// Get statistics
+// Obtenir les statistiques
 $stats = $result->statistics;
 ```
 
-### Custom Analyzers
+### Analyseurs Personnalisés
 
-Extend the package with your own analyzers:
+Étendez le package avec vos propres analyseurs :
 
 ```php
 use LaravelViewAnalyzer\Analyzers\Contracts\AnalyzerInterface;
@@ -174,12 +181,12 @@ class InertiaAnalyzer implements AnalyzerInterface
 {
     public function analyze(): Collection
     {
-        // Your custom detection logic
+        // Votre logique de détection personnalisée
     }
 
     public function getName(): string
     {
-        return 'Inertia Analyzer';
+        return 'Analyseur Inertia';
     }
 
     public function isEnabled(): bool
@@ -193,28 +200,28 @@ class InertiaAnalyzer implements AnalyzerInterface
     }
 }
 
-// Register in a service provider
+// Enregistrer dans un service provider
 $analyzer = app(ViewAnalyzer::class);
 $analyzer->addAnalyzer(new InertiaAnalyzer);
 ```
 
-## Requirements
+## 📋 Prérequis
 
-- PHP 8.3 or higher
-- Laravel 11.0 or 12.0
+- PHP 8.3 ou supérieur
+- Laravel 11.0 ou 12.0
 
-## License
+## 📄 Licence
 
-MIT License
+Licence MIT
 
-## Author
+## 👤 Auteur
 
-**Leknoppix** - [Le Journal du Gers](https://lejournaldugers.fr)
+**Pascal Canadas** - [Le Journal du Gers](https://lejournaldugers.fr)
 
-## Contributing
+## 🤝 Contribution
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Les contributions sont les bienvenues ! N'hésitez pas à soumettre une Pull Request.
 
-## Support
+## support
 
-For issues and questions, please use the [GitHub issue tracker](https://github.com/leknoppix/laravel-view-analyzer/issues).
+Pour les problèmes et questions, veuillez utiliser le [suivi des problèmes GitHub](https://github.com/leknoppix/laravel-view-analyzer/issues).

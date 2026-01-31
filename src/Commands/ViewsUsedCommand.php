@@ -15,11 +15,10 @@ class ViewsUsedCommand extends Command
 
     protected $description = 'List all used views with their references';
 
-    public function handle(): int
+    public function handle(ViewAnalyzer $analyzer): int
     {
         $this->info('Finding used views...');
 
-        $analyzer = new ViewAnalyzer(config('view-analyzer'));
         $result = $analyzer->analyze();
 
         $usedViews = $result->usedViews;
@@ -44,7 +43,7 @@ class ViewsUsedCommand extends Command
 
         foreach ($usedViews as $view) {
             $this->line("\n<fg=cyan>{$view->viewName}</> ({$view->referenceCount} references)");
-            $this->line('  Types: '.implode(', ', $view->types));
+            $this->line('  Types: ' . implode(', ', $view->types));
 
             if ($this->option('show-locations')) {
                 foreach ($view->references->take(10) as $ref) {

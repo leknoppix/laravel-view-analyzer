@@ -26,8 +26,11 @@ return [
     'scan_paths' => [
         app_path('Http/Controllers'),
         app_path('Mail'),
+        app_path('Console'),
         app_path('View/Components'),
         app_path('Http/Middleware'),
+        app_path('Providers'),
+        app_path('Notifications'),
         base_path('routes'),
         resource_path('views'),
     ],
@@ -48,6 +51,23 @@ return [
         'bootstrap/cache',
         'public/build',
         'public/hot',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Ignored Views
+    |--------------------------------------------------------------------------
+    |
+    | View patterns that should be ignored when reporting unused views.
+    | This is useful for views published from vendor packages or views
+    | that are called dynamically in ways the analyzer cannot detect.
+    |
+    */
+    'ignored_views' => [
+        'auth.*',
+        'layouts.*',
+        'errors.*',
+        'vendor.*',
     ],
 
     /*
@@ -85,6 +105,10 @@ return [
             'enabled' => true,
             'priority' => 30,
         ],
+        'command' => [
+            'enabled' => true,
+            'priority' => 35,
+        ],
         'component' => [
             'enabled' => true,
             'priority' => 40,
@@ -96,6 +120,14 @@ return [
         'middleware' => [
             'enabled' => true,
             'priority' => 60,
+        ],
+        'provider' => [
+            'enabled' => true,
+            'priority' => 70,
+        ],
+        'notification' => [
+            'enabled' => true,
+            'priority' => 32,
         ],
     ],
 
@@ -168,5 +200,19 @@ return [
         'show_references' => false,
         'group_by_directory' => true,
         'max_results' => 1000,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Web Interface Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Configuration for the web dashboard interface.
+    |
+    */
+    'web' => [
+        'enabled' => env('VIEW_ANALYZER_WEB_ENABLED', true),
+        'path' => 'admin/viewpackage',
+        'middleware' => ['web', 'auth'],
     ],
 ];

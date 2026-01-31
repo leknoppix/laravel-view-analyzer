@@ -2,7 +2,19 @@
 
 All notable changes to `laravel-view-analyzer` will be documented in this file.
 
-## [Unreleased]
+## [1.0.1] - 2026-01-31
+
+### Added
+- **NotificationAnalyzer**: Support for detecting views used in `app/Notifications` (`toMail`, `toMarkdown`).
+- **Tree View Report**: New `--format=tree` option for `views:controllers` command to visualize controller/view hierarchy.
+- **Web Dashboard**: New interactive dashboard at `/admin/viewpackage` with charts and tree view.
+- **CommandAnalyzer**: Support for detecting views used in Artisan commands.
+- **ProviderAnalyzer**: Support for `Paginator::defaultView` in ServiceProviders.
+
+### Improved
+- **Pattern Matching**: Enhanced detection for Laravel 11 mailables and dynamic components.
+- **Performance**: Optimized file scanning and pattern matching regex.
+- **Reporting**: Better handling of dynamic view references in JSON and HTML reports.
 
 ## [1.0.0] - 2026-01-19
 

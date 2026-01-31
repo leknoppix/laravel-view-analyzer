@@ -11,9 +11,12 @@
             <directory suffix="Test.php">./tests/Feature</directory>
         </testsuite>
     </testsuites>
-    <coverage>
+    <source>
         <include>
             <directory suffix=".php">./src</directory>
         </include>
-    </coverage>
+        <exclude>
+            <directory>./src/Console</directory> <!-- Command inputs often hard to test -->
+        </exclude>
+    </source>
 </phpunit>

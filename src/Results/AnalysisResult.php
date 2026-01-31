@@ -13,7 +13,21 @@ class AnalysisResult
         public Collection $dynamicViews,
         public array $statistics = [],
         public array $warnings = []
-    ) {
+    ) {}
+
+    public function getAllViews(): Collection
+    {
+        return $this->usedViews->merge($this->unusedViews);
+    }
+
+    public function getUsedViews(): Collection
+    {
+        return $this->usedViews;
+    }
+
+    public function getUnusedViews(): Collection
+    {
+        return $this->unusedViews;
     }
 
     public function toArray(): array

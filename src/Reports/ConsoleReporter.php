@@ -34,7 +34,7 @@ class ConsoleReporter implements ReporterInterface
         if ($result->warnings) {
             $output[] = 'Warnings:';
             foreach ($result->warnings as $warning) {
-                $output[] = '  - '.$warning;
+                $output[] = '  - ' . $warning;
             }
             $output[] = '';
         }

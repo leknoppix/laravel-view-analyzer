@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laravel View Analyzer - Nettoyez vos Vues Blade</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        laravel: '#FF2D20',
+                        dark: '#1a202c',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="font-sans antialiased text-gray-900 bg-white">
+
+    <!-- Navbar -->
+    <nav class="bg-dark text-white border-b border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <span class="text-xl font-bold tracking-tight text-laravel mr-2"><i class="fas fa-search"></i></span>
+                    <span class="text-xl font-bold tracking-tight">Laravel View Analyzer</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="#features" class="hover:text-laravel transition">Fonctionnalités</a>
+                    <a href="#installation" class="hover:text-laravel transition">Installation</a>
+                    <a href="https://github.com/leknoppix/laravel-view-analyzer" class="bg-laravel hover:bg-red-700 text-white px-4 py-2 rounded-md font-medium transition duration-150 ease-in-out">
+                        <i class="fab fa-github mr-2"></i> GitHub
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="relative bg-dark overflow-hidden">
+        <div class="max-w-7xl mx-auto">
+            <div class="relative z-10 pb-8 bg-dark sm:pb-16 md:pb-20 lg:max-w-2xl lg:w-full lg:pb-28 xl:pb-32">
+                <main class="mt-10 mx-auto max-w-7xl px-4 sm:mt-12 sm:px-6 md:mt-16 lg:mt-20 lg:px-8 xl:mt-28">
+                    <div class="sm:text-center lg:text-left">
+                        <h1 class="text-4xl tracking-tight font-extrabold text-white sm:text-5xl md:text-6xl">
+                            <span class="block xl:inline">Nettoyez vos</span>
+                            <span class="block text-laravel xl:inline">templates Blade</span>
+                        </h1>
+                        <p class="mt-3 text-base text-gray-400 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
+                            Arrêtez de deviner quelles vues sont inutilisées. Détectez les templates orphelins, visualisez les relations contrôleur-vue, et gardez votre projet Laravel propre et maintenable.
+                        </p>
+                        <div class="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start">
+                            <div class="rounded-md shadow">
+                                <a href="#installation" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-laravel hover:bg-red-700 md:py-4 md:text-lg md:px-10 transition">
+                                    Commencer
+                                </a>
+                            </div>
+                            <div class="mt-3 sm:mt-0 sm:ml-3">
+                                <a href="https://github.com/leknoppix/laravel-view-analyzer" class="w-full flex items-center justify-center px-8 py-3 border border-gray-600 text-base font-medium rounded-md text-gray-300 bg-gray-800 hover:bg-gray-700 md:py-4 md:text-lg md:px-10 transition">
+                                    Voir le Code
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+        <div class="lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2 bg-gray-800 flex items-center justify-center overflow-hidden">
+            <div class="w-full h-full p-8 flex items-center justify-center">
+                 <!-- Placeholder for dashboard image -->
+                 <div class="bg-white rounded-lg shadow-2xl overflow-hidden w-full max-w-lg transform -rotate-2 hover:rotate-0 transition duration-500">
+                    <div class="bg-gray-100 border-b p-4 flex space-x-2">
+                        <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="font-bold text-lg text-gray-800">Rapport d'Analyse</h3>
+                            <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Terminé</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 mb-6">
+                            <div class="bg-blue-50 p-4 rounded-lg">
+                                <div class="text-2xl font-bold text-blue-600">342</div>
+                                <div class="text-sm text-gray-600">Vues Utilisées</div>
+                            </div>
+                            <div class="bg-red-50 p-4 rounded-lg">
+                                <div class="text-2xl font-bold text-red-600">28</div>
+                                <div class="text-sm text-gray-600">Vues Inutilisées</div>
+                            </div>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="h-2 bg-gray-200 rounded w-3/4"></div>
+                            <div class="h-2 bg-gray-200 rounded w-1/2"></div>
+                            <div class="h-2 bg-gray-200 rounded w-5/6"></div>
+                        </div>
+                    </div>
+                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div id="features" class="py-12 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="lg:text-center">
+                <h2 class="text-base text-laravel font-semibold tracking-wide uppercase">Fonctionnalités</h2>
+                <p class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
+                    Comprenez l'Architecture de vos Vues
+                </p>
+                <p class="mt-4 max-w-2xl text-xl text-gray-500 lg:mx-auto">
+                    Laravel View Analyzer va au-delà du simple scan de fichiers. Il comprend comment votre application fonctionne.
+                </p>
+            </div>
+
+            <div class="mt-10">
+                <dl class="space-y-10 md:space-y-0 md:grid md:grid-cols-2 md:gap-x-8 md:gap-y-10">
+                    <div class="relative">
+                        <dt>
+                            <div class="absolute flex items-center justify-center h-12 w-12 rounded-md bg-laravel text-white">
+                                <i class="fas fa-trash-alt"></i>
+                            </div>
+                            <p class="ml-16 text-lg leading-6 font-medium text-gray-900">Détection de Vues Inutilisées</p>
+                        </dt>
+                        <dd class="mt-2 ml-16 text-base text-gray-500">
+                            Identifiez les templates qui ne sont plus référencés dans vos contrôleurs, routes ou autres vues.
+                        </dd>
+                    </div>
+
+                    <div class="relative">
+                        <dt>
+                            <div class="absolute flex items-center justify-center h-12 w-12 rounded-md bg-laravel text-white">
+                                <i class="fas fa-project-diagram"></i>
+                            </div>
+                            <p class="ml-16 text-lg leading-6 font-medium text-gray-900">Cartographie des Contrôleurs</p>
+                        </dt>
+                        <dd class="mt-2 ml-16 text-base text-gray-500">
+                            Visualisez la relation entre vos contrôleurs et vos vues dans un format arborescent hiérarchique.
+                        </dd>
+                    </div>
+
+                    <div class="relative">
+                        <dt>
+                            <div class="absolute flex items-center justify-center h-12 w-12 rounded-md bg-laravel text-white">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <p class="ml-16 text-lg leading-6 font-medium text-gray-900">Tableau de Bord Web</p>
+                        </dt>
+                        <dd class="mt-2 ml-16 text-base text-gray-500">
+                            Inclut un superbe tableau de bord intégré accessible via votre navigateur pour explorer les résultats d'analyse.
+                        </dd>
+                    </div>
+
+                    <div class="relative">
+                        <dt>
+                            <div class="absolute flex items-center justify-center h-12 w-12 rounded-md bg-laravel text-white">
+                                <i class="fas fa-brain"></i>
+                            </div>
+                            <p class="ml-16 text-lg leading-6 font-medium text-gray-900">Analyse Intelligente</p>
+                        </dt>
+                        <dd class="mt-2 ml-16 text-base text-gray-500">
+                            Détecte automatiquement les appels dynamiques, les liens de pagination, les mailables, les notifications, les commandes et les références de composants.
+                        </dd>
+                    </div>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <!-- Installation Section -->
+    <div id="installation" class="py-16 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="lg:text-center mb-10">
+                <h2 class="text-3xl font-extrabold text-gray-900">Démarrez en quelques secondes</h2>
+            </div>
+
+            <div class="max-w-3xl mx-auto">
+                <div class="bg-gray-900 rounded-lg shadow-xl overflow-hidden">
+                    <div class="flex items-center justify-between px-4 py-3 bg-gray-800">
+                        <div class="flex space-x-2">
+                            <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                        </div>
+                        <div class="text-gray-400 text-sm font-mono">Terminal</div>
+                    </div>
+                    <div class="p-6 text-gray-300 font-mono text-sm leading-relaxed">
+                        <p class="mb-4">
+                            <span class="text-green-400">$</span> composer require leknoppix/laravel-view-analyzer --dev
+                        </p>
+                        <p class="mb-4">
+                            <span class="text-green-400">$</span> php artisan vendor:publish --tag=view-analyzer-config
+                        </p>
+                        <p>
+                            <span class="text-green-400">$</span> php artisan views:analyze
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark border-t border-gray-800">
+        <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+            <p class="text-center text-base text-gray-400">
+                &copy; 2026 Laravel View Analyzer par Pascal Canadas. Sous licence MIT.
+            </p>
+        </div>
+    </footer>
+
+</body>
+</html>

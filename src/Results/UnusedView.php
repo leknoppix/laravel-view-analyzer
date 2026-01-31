@@ -12,8 +12,7 @@ class UnusedView
         public int $fileSize,
         public Carbon $lastModified,
         public array $suggestions = []
-    ) {
-    }
+    ) {}
 
     public function toArray(): array
     {
@@ -38,6 +37,6 @@ class UnusedView
             $unit++;
         }
 
-        return round($size, 2).' '.$units[$unit];
+        return round($size, 2) . ' ' . $units[$unit];
     }
 }

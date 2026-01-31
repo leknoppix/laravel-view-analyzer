@@ -1,0 +1,89 @@
+<?php
+
+namespace LaravelViewAnalyzer\Tests\Unit\Analyzers;
+
+use LaravelViewAnalyzer\Analyzers\NotificationAnalyzer;
+use LaravelViewAnalyzer\Tests\TestCase;
+
+class NotificationAnalyzerTest extends TestCase
+{
+    private NotificationAnalyzer $analyzer;
+
+    private $config;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->config = [
+            'scan_paths' => [__DIR__ . '/../../Fixtures/Notifications'],
+            'exclude_paths' => [],
+            'analyzers' => [
+                'notification' => ['enabled' => true, 'priority' => 32],
+            ],
+        ];
+
+        $this->analyzer = new NotificationAnalyzer($this->config);
+    }
+
+    public function test_it_detects_views_in_notifications()
+    {
+        // Create a temporary directory for our test notification
+        // Must contain "Notifications" to be picked up by the analyzer path filter
+        $tempDir = sys_get_temp_dir() . '/view_analyzer_test_Notifications_' . uniqid();
+        mkdir($tempDir);
+
+        $content = <<<'PHP'
+<?php
+
+namespace App\Notifications;
+
+use Illuminate\Notifications\Notification;
+use Illuminate\Notifications\Messages\MailMessage;
+
+class InvoicePaid extends Notification
+{
+    public function toMail($notifiable)
+    {
+        return (new MailMessage)
+                    ->view('emails.invoice.paid', ['invoice' => $this->invoice]);
+    }
+
+    public function toMarkdown($notifiable)
+    {
+        return (new MailMessage)
+                    ->markdown('emails.invoice.markdown');
+    }
+}
+PHP;
+
+        file_put_contents($tempDir . '/InvoicePaid.php', $content);
+
+        $analyzer = new NotificationAnalyzer([
+            'scan_paths' => [$tempDir],
+            'analyzers' => ['notification' => ['enabled' => true]],
+        ]);
+
+        $results = $analyzer->analyze();
+
+        $viewNames = $results->pluck('viewName')->toArray();
+
+        $this->assertContains('emails.invoice.paid', $viewNames);
+        $this->assertContains('emails.invoice.markdown', $viewNames);
+
+        $paidRef = $results->where('viewName', 'emails.invoice.paid')->first();
+        $this->assertStringContainsString('Notification::toMail', $paidRef->context);
+        $this->assertEquals('notification', $paidRef->type);
+
+        // Cleanup
+        unlink($tempDir . '/InvoicePaid.php');
+        rmdir($tempDir);
+    }
+
+    public function test_it_has_correct_metadata()
+    {
+        $this->assertEquals('Notification Analyzer', $this->analyzer->getName());
+        $this->assertTrue($this->analyzer->isEnabled());
+        $this->assertEquals(32, $this->analyzer->getPriority());
+    }
+}
