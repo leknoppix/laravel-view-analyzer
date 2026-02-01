@@ -121,11 +121,14 @@ class ViewAnalyzer
 
     protected function aggregateUsedViews(Collection $references): Collection
     {
+        $viewRegistry = $this->getViewRegistry();
+
         return $references
             ->groupBy('viewName')
             ->map(fn ($refs, $viewName) => new ViewUsage(
                 viewName: $viewName,
-                references: $refs
+                references: $refs,
+                filePath: $viewRegistry->get($viewName)
             ))
             ->values();
     }

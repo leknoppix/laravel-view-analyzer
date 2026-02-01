@@ -24,7 +24,7 @@ class AnalysisCacheTest extends TestCase
                 'enabled' => true,
                 'key_prefix' => 'view_analyzer_',
                 'ttl' => 3600,
-            ]
+            ],
         ]);
 
         $cache->put('test_key', 'test_value');
@@ -39,7 +39,7 @@ class AnalysisCacheTest extends TestCase
         $cache = new AnalysisCache([
             'cache' => [
                 'enabled' => false,
-            ]
+            ],
         ]);
 
         $cache->put('test_key', 'test_value');

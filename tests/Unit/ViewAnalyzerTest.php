@@ -20,7 +20,7 @@ class ViewAnalyzerTest extends TestCase
 
         // Check if all 9 default analyzers are registered
         $this->assertGreaterThanOrEqual(9, $analyzers->count());
-        $analyzerClasses = $analyzers->map(fn($a) => get_class($a))->toArray();
+        $analyzerClasses = $analyzers->map(fn ($a) => get_class($a))->toArray();
 
         $this->assertContains(\LaravelViewAnalyzer\Analyzers\ControllerAnalyzer::class, $analyzerClasses);
         $this->assertContains(\LaravelViewAnalyzer\Analyzers\BladeAnalyzer::class, $analyzerClasses);
@@ -34,7 +34,7 @@ class ViewAnalyzerTest extends TestCase
         $mockAnalyzer->shouldReceive('isEnabled')->andReturn(true);
         $mockAnalyzer->shouldReceive('getPriority')->andReturn(10);
         $mockAnalyzer->shouldReceive('analyze')->andReturn(collect([
-            new ViewReference('mock.view', 'file.php', 1, 'context', 'mock')
+            new ViewReference('mock.view', 'file.php', 1, 'context', 'mock'),
         ]));
 
         $analyzer = new ViewAnalyzer(['scan_paths' => []]);
@@ -55,7 +55,41 @@ class ViewAnalyzerTest extends TestCase
 
         $this->assertEquals(1, $result->usedViews->count());
         $this->assertEquals('mock.view', $result->usedViews->first()->viewName);
+        // It should have the full path from the mock registry if it existed,
+        // but here the registry is empty or doesn't match 'mock.view'
+        // Let's improve this test to verify the path resolution
+    }
 
+    public function test_it_resolves_file_paths_for_used_views()
+    {
+        $tempDir = sys_get_temp_dir() . '/views_' . uniqid();
+        mkdir($tempDir);
+        $viewFile = $tempDir . '/test.blade.php';
+        touch($viewFile);
+
+        config(['view-analyzer.view_paths' => [$tempDir]]);
+
+        $mockAnalyzer = Mockery::mock(AnalyzerInterface::class);
+        $mockAnalyzer->shouldReceive('isEnabled')->andReturn(true);
+        $mockAnalyzer->shouldReceive('getPriority')->andReturn(10);
+        $mockAnalyzer->shouldReceive('analyze')->andReturn(collect([
+            new ViewReference('test', 'file.php', 1, 'context', 'mock'),
+        ]));
+
+        $analyzer = new ViewAnalyzer(['view_paths' => [$tempDir]]);
+
+        $reflection = new \ReflectionClass($analyzer);
+        $property = $reflection->getProperty('analyzers');
+        $property->setAccessible(true);
+        $property->setValue($analyzer, collect([$mockAnalyzer]));
+
+        $result = $analyzer->analyze();
+
+        $this->assertEquals(1, $result->usedViews->count());
+        $this->assertEquals('test', $result->usedViews->first()->viewName);
+        $this->assertEquals($viewFile, $result->usedViews->first()->filePath);
+
+        unlink($viewFile);
         rmdir($tempDir);
     }
 
@@ -82,7 +116,7 @@ class ViewAnalyzerTest extends TestCase
         $unused = $analyzer->findUnusedViews(
             collect([
                 'used.view' => '/path/used.blade.php',
-                'unused.view' => '/path/unused.blade.php'
+                'unused.view' => '/path/unused.blade.php',
             ]),
             collect([$usedUsage])
         );

@@ -20,7 +20,7 @@ class CsvReporterTest extends TestCase
 
     public function test_it_generates_csv_output()
     {
-        $usedView = new ViewUsage('used.view', collect([]), 1, ['controller']);
+        $usedView = new ViewUsage('used.view', collect([]), null, 1, ['controller']);
         $unusedView = new UnusedView('unused.view', 'path/to/unused.blade.php', 100, now());
 
         $result = new AnalysisResult(

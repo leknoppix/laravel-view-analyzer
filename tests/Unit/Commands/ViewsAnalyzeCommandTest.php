@@ -5,7 +5,6 @@ namespace LaravelViewAnalyzer\Tests\Unit\Commands;
 use LaravelViewAnalyzer\Results\AnalysisResult;
 use LaravelViewAnalyzer\Tests\TestCase;
 use LaravelViewAnalyzer\ViewAnalyzer;
-use Mockery;
 
 class ViewsAnalyzeCommandTest extends TestCase
 {
@@ -56,11 +55,11 @@ class ViewsAnalyzeCommandTest extends TestCase
 
         $this->artisan('views:analyze', [
             '--format' => 'json',
-            '--output' => $outputFile
+            '--output' => $outputFile,
         ])
-        ->expectsOutput('Analyzing views...')
-        ->expectsOutput("Report saved to: {$outputFile}")
-        ->assertExitCode(0);
+            ->expectsOutput('Analyzing views...')
+            ->expectsOutput("Report saved to: {$outputFile}")
+            ->assertExitCode(0);
 
         $this->assertFileExists($outputFile);
         $content = file_get_contents($outputFile);

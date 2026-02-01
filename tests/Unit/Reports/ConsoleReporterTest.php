@@ -28,7 +28,7 @@ class ConsoleReporterTest extends TestCase
             dynamicViews: collect(),
             statistics: [
                 'total_references' => 15,
-                'by_type' => ['controller' => 10, 'blade' => 5]
+                'by_type' => ['controller' => 10, 'blade' => 5],
             ],
             warnings: ['Warning: something is wrong']
         );

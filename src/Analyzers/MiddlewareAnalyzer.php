@@ -22,7 +22,7 @@ class MiddlewareAnalyzer implements AnalyzerInterface
         $references = collect();
 
         $scanPaths = $this->config['scan_paths'] ?? [];
-        $middlewarePaths = array_filter($scanPaths, function($path) {
+        $middlewarePaths = array_filter($scanPaths, function ($path) {
             return str_contains($path, 'Middleware');
         });
 

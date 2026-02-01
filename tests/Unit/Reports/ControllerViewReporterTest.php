@@ -18,9 +18,9 @@ class ControllerViewReporterTest extends TestCase
                     [
                         'action' => 'index',
                         'views' => ['pages.home'],
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ]);
 
         $reporter = new ControllerViewReporter();
@@ -42,9 +42,9 @@ class ControllerViewReporterTest extends TestCase
                     [
                         'action' => 'index',
                         'views' => ['pages.home'],
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ]);
 
         $reporter = new ControllerViewReporter();
@@ -60,8 +60,8 @@ class ControllerViewReporterTest extends TestCase
         $data = collect([
             [
                 'controller' => 'HomeController',
-                'actions' => []
-            ]
+                'actions' => [],
+            ],
         ]);
 
         $reporter = new ControllerViewReporter();
@@ -82,9 +82,9 @@ class ControllerViewReporterTest extends TestCase
                     [
                         'action' => 'index',
                         'views' => ['pages.home'],
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ]);
 
         $reporter = new ControllerViewReporter();

@@ -2,7 +2,6 @@
 
 namespace LaravelViewAnalyzer\Tests\Unit\Support;
 
-use Illuminate\Support\Collection;
 use LaravelViewAnalyzer\Results\AnalysisResult;
 use LaravelViewAnalyzer\Results\ViewReference;
 use LaravelViewAnalyzer\Results\ViewUsage;

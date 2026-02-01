@@ -6,7 +6,6 @@ use LaravelViewAnalyzer\Results\AnalysisResult;
 use LaravelViewAnalyzer\Results\UnusedView;
 use LaravelViewAnalyzer\Tests\TestCase;
 use LaravelViewAnalyzer\ViewAnalyzer;
-use Mockery;
 
 class ViewsUnusedCommandTest extends TestCase
 {

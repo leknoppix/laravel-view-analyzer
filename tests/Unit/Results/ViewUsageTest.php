@@ -2,7 +2,6 @@
 
 namespace LaravelViewAnalyzer\Tests\Unit\Results;
 
-use Illuminate\Support\Collection;
 use LaravelViewAnalyzer\Results\ViewReference;
 use LaravelViewAnalyzer\Results\ViewUsage;
 use LaravelViewAnalyzer\Tests\TestCase;
@@ -16,9 +15,10 @@ class ViewUsageTest extends TestCase
 
         $references = collect([$ref1, $ref2]);
 
-        $usage = new ViewUsage('view.name', $references);
+        $usage = new ViewUsage('view.name', $references, '/absolute/path/to/view.blade.php');
 
         $this->assertEquals('view.name', $usage->viewName);
+        $this->assertEquals('/absolute/path/to/view.blade.php', $usage->filePath);
         $this->assertEquals(2, $usage->referenceCount); // Should be auto-calculated
         $this->assertEquals(['controller', 'blade'], $usage->types); // Should extract unique types
     }
@@ -26,11 +26,12 @@ class ViewUsageTest extends TestCase
     public function test_it_converts_to_array()
     {
         $ref = new ViewReference('view.name', 'file.php', 10, 'ctx', 'controller');
-        $usage = new ViewUsage('view.name', collect([$ref]));
+        $usage = new ViewUsage('view.name', collect([$ref]), '/absolute/path/to/view.blade.php');
 
         $array = $usage->toArray();
 
         $this->assertEquals('view.name', $array['view_name']);
+        $this->assertEquals('/absolute/path/to/view.blade.php', $array['file_path']);
         $this->assertEquals(1, $array['reference_count']);
         $this->assertEquals(['controller'], $array['types']);
         $this->assertCount(1, $array['references']);

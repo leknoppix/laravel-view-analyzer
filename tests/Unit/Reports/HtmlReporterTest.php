@@ -19,7 +19,7 @@ class HtmlReporterTest extends TestCase
 
     public function test_it_generates_html_output()
     {
-        $usedView = new ViewUsage('used.view', collect([]), 5, ['controller', 'blade']);
+        $usedView = new ViewUsage('used.view', collect([]), null, 5, ['controller', 'blade']);
 
         $result = new AnalysisResult(
             totalViews: 10,

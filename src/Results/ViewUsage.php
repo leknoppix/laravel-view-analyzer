@@ -9,6 +9,7 @@ class ViewUsage
     public function __construct(
         public string $viewName,
         public Collection $references,
+        public ?string $filePath = null,
         public int $referenceCount = 0,
         public array $types = []
     ) {
@@ -25,6 +26,7 @@ class ViewUsage
     {
         return [
             'view_name' => $this->viewName,
+            'file_path' => $this->filePath,
             'reference_count' => $this->referenceCount,
             'types' => $this->types,
             'references' => $this->references->map(fn ($ref) => $ref->toArray())->toArray(),

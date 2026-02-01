@@ -8,6 +8,7 @@ use LaravelViewAnalyzer\Tests\TestCase;
 class MiddlewareAnalyzerTest extends TestCase
 {
     private MiddlewareAnalyzer $analyzer;
+
     private $config;
 
     protected function setUp(): void
@@ -16,8 +17,8 @@ class MiddlewareAnalyzerTest extends TestCase
 
         $this->config = [
             'analyzers' => [
-                'middleware' => ['enabled' => true, 'priority' => 60]
-            ]
+                'middleware' => ['enabled' => true, 'priority' => 60],
+            ],
         ];
 
         $this->analyzer = new MiddlewareAnalyzer($this->config);
@@ -54,7 +55,7 @@ PHP;
 
         $analyzer = new MiddlewareAnalyzer([
             'scan_paths' => [$tempDir],
-            'analyzers' => ['middleware' => ['enabled' => true]]
+            'analyzers' => ['middleware' => ['enabled' => true]],
         ]);
 
         $results = $analyzer->analyze();

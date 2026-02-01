@@ -7,7 +7,6 @@ use LaravelViewAnalyzer\Results\ViewReference;
 use LaravelViewAnalyzer\Results\ViewUsage;
 use LaravelViewAnalyzer\Tests\TestCase;
 use LaravelViewAnalyzer\ViewAnalyzer;
-use Mockery;
 
 class ViewsControllersCommandTest extends TestCase
 {
@@ -30,7 +29,7 @@ class ViewsControllersCommandTest extends TestCase
     public function test_it_lists_controller_views()
     {
         $ref = new ViewReference('pages.home', app_path('Http/Controllers/HomeController.php'), 10, 'HomeController::index', 'controller');
-        $usage = new ViewUsage('pages.home', collect([$ref]), 1, ['controller']);
+        $usage = new ViewUsage('pages.home', collect([$ref]), null, 1, ['controller']);
 
         $result = new AnalysisResult(
             totalViews: 1,
@@ -45,7 +44,7 @@ class ViewsControllersCommandTest extends TestCase
 
         $this->artisan('views:controllers', [
             '--format' => 'json',
-            '--output' => $this->tempFile
+            '--output' => $this->tempFile,
         ])->assertExitCode(0);
 
         $this->assertFileExists($this->tempFile);
@@ -59,10 +58,10 @@ class ViewsControllersCommandTest extends TestCase
     public function test_it_filters_by_controller_name()
     {
         $ref1 = new ViewReference('pages.home', app_path('Http/Controllers/HomeController.php'), 10, 'HomeController::index', 'controller');
-        $usage1 = new ViewUsage('pages.home', collect([$ref1]), 1, ['controller']);
+        $usage1 = new ViewUsage('pages.home', collect([$ref1]), null, 1, ['controller']);
 
         $ref2 = new ViewReference('admin.dash', app_path('Http/Controllers/AdminController.php'), 20, 'AdminController::index', 'controller');
-        $usage2 = new ViewUsage('admin.dash', collect([$ref2]), 1, ['controller']);
+        $usage2 = new ViewUsage('admin.dash', collect([$ref2]), null, 1, ['controller']);
 
         $result = new AnalysisResult(
             totalViews: 2,
@@ -78,7 +77,7 @@ class ViewsControllersCommandTest extends TestCase
         $this->artisan('views:controllers', [
             '--controller' => 'Admin',
             '--format' => 'json',
-            '--output' => $this->tempFile
+            '--output' => $this->tempFile,
         ])->assertExitCode(0);
 
         $this->assertFileExists($this->tempFile);

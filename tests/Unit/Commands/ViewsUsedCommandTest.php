@@ -7,14 +7,13 @@ use LaravelViewAnalyzer\Results\ViewReference;
 use LaravelViewAnalyzer\Results\ViewUsage;
 use LaravelViewAnalyzer\Tests\TestCase;
 use LaravelViewAnalyzer\ViewAnalyzer;
-use Mockery;
 
 class ViewsUsedCommandTest extends TestCase
 {
     public function test_it_lists_used_views()
     {
         $ref = new ViewReference('pages.home', 'ctrl.php', 10, 'ctx', 'controller');
-        $usage = new ViewUsage('pages.home', collect([$ref]), 1, ['controller']);
+        $usage = new ViewUsage('pages.home', collect([$ref]), null, 1, ['controller']);
 
         $result = new AnalysisResult(
             totalViews: 1,
@@ -38,10 +37,10 @@ class ViewsUsedCommandTest extends TestCase
     public function test_it_filters_by_type()
     {
         $ref1 = new ViewReference('pages.home', 'ctrl.php', 10, 'ctx', 'controller');
-        $usage1 = new ViewUsage('pages.home', collect([$ref1]), 1, ['controller']);
+        $usage1 = new ViewUsage('pages.home', collect([$ref1]), null, 1, ['controller']);
 
         $ref2 = new ViewReference('emails.welcome', 'mail.php', 20, 'ctx', 'mailable');
-        $usage2 = new ViewUsage('emails.welcome', collect([$ref2]), 1, ['mailable']);
+        $usage2 = new ViewUsage('emails.welcome', collect([$ref2]), null, 1, ['mailable']);
 
         $result = new AnalysisResult(
             totalViews: 2,
