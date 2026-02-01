@@ -55,4 +55,42 @@ class ViewsUnusedCommandTest extends TestCase
             ->expectsOutputToContain('No unused views found!')
             ->assertExitCode(0);
     }
+
+    public function test_it_filters_by_path()
+    {
+        $view1 = new UnusedView('admin.dash', '/path/to/views/admin/dash.blade.php', 1024, now());
+        $view2 = new UnusedView('home', '/path/to/views/home.blade.php', 2048, now());
+        $result = new AnalysisResult(2, collect(), collect([$view1, $view2]), collect());
+
+        $this->mock(ViewAnalyzer::class, fn ($mock) => $mock->shouldReceive('analyze')->andReturn($result));
+
+        $this->artisan('views:unused', ['--path' => 'admin'])
+            ->expectsOutputToContain('admin.dash')
+            ->doesntExpectOutputToContain('home')
+            ->assertExitCode(0);
+    }
+
+    public function test_it_shows_file_sizes()
+    {
+        $view = new UnusedView('test', '/path/test.blade.php', 1024, now());
+        $result = new AnalysisResult(1, collect(), collect([$view]), collect());
+
+        $this->mock(ViewAnalyzer::class, fn ($mock) => $mock->shouldReceive('analyze')->andReturn($result));
+
+        $this->artisan('views:unused', ['--size' => true])
+            ->expectsOutputToContain('Size: 1 KB')
+            ->assertExitCode(0);
+    }
+
+    public function test_it_suggests_delete_commands()
+    {
+        $view = new UnusedView('test', '/path/test.blade.php', 1024, now());
+        $result = new AnalysisResult(1, collect(), collect([$view]), collect());
+
+        $this->mock(ViewAnalyzer::class, fn ($mock) => $mock->shouldReceive('analyze')->andReturn($result));
+
+        $this->artisan('views:unused', ['--suggest-delete' => true])
+            ->expectsOutputToContain('rm "/path/test.blade.php"')
+            ->assertExitCode(0);
+    }
 }

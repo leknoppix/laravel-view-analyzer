@@ -35,6 +35,7 @@ class AnalysisCacheTest extends TestCase
     {
         Cache::shouldReceive('put')->never();
         Cache::shouldReceive('get')->never();
+        Cache::shouldReceive('has')->never();
 
         $cache = new AnalysisCache([
             'cache' => [
@@ -44,6 +45,7 @@ class AnalysisCacheTest extends TestCase
 
         $cache->put('test_key', 'test_value');
         $this->assertNull($cache->get('test_key'));
+        $this->assertFalse($cache->has('test_key'));
     }
 
     public function test_it_checks_existence()
@@ -74,5 +76,22 @@ class AnalysisCacheTest extends TestCase
 
         $cache = new AnalysisCache();
         $cache->flush();
+    }
+
+    public function test_it_uses_custom_config()
+    {
+        Cache::shouldReceive('put')
+            ->once()
+            ->with('custom_prefix_key', 'value', 7200);
+
+        $cache = new AnalysisCache([
+            'cache' => [
+                'key_prefix' => 'custom_prefix_',
+                'ttl' => 7200,
+                'enabled' => true,
+            ],
+        ]);
+
+        $cache->put('key', 'value');
     }
 }

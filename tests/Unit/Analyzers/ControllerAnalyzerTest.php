@@ -85,4 +85,33 @@ PHP;
         $this->assertTrue($this->analyzer->isEnabled());
         $this->assertEquals(10, $this->analyzer->getPriority());
     }
+
+    public function test_it_respects_disabled_config()
+    {
+        $analyzer = new ControllerAnalyzer(['analyzers' => ['controller' => ['enabled' => false]]]);
+        $this->assertFalse($analyzer->isEnabled());
+    }
+
+    public function test_it_skips_empty_files()
+    {
+        $tempDir = sys_get_temp_dir() . '/view_test_ctrl_empty_' . uniqid();
+        mkdir($tempDir);
+        $file = $tempDir . '/EmptyController.php';
+        touch($file);
+
+        $analyzer = new ControllerAnalyzer(['scan_paths' => [$tempDir]]);
+        $results = $analyzer->analyze();
+
+        $this->assertCount(0, $results);
+
+        unlink($file);
+        rmdir($tempDir);
+    }
+
+    public function test_it_uses_default_app_path_when_config_is_empty()
+    {
+        $analyzer = new ControllerAnalyzer(['scan_paths' => []]);
+        $results = $analyzer->analyze();
+        $this->assertInstanceOf(\Illuminate\Support\Collection::class, $results);
+    }
 }

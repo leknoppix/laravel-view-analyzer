@@ -66,4 +66,71 @@ class CommandAnalyzerTest extends TestCase
 
         $this->assertFalse($analyzer->isEnabled());
     }
+
+    public function test_it_has_correct_name()
+    {
+        $this->assertEquals('Command Analyzer', $this->analyzer->getName());
+    }
+
+    public function test_it_has_default_priority()
+    {
+        $this->assertEquals(35, $this->analyzer->getPriority());
+    }
+
+    public function test_it_skips_invalid_directories()
+    {
+        $analyzer = new CommandAnalyzer(['scan_paths' => ['/non/existent/Console']]);
+        $results = $analyzer->analyze();
+        $this->assertCount(0, $results);
+    }
+
+    public function test_it_skips_empty_files(): void
+    {
+        $tempDir = sys_get_temp_dir() . '/view_test_Console_' . uniqid();
+        mkdir($tempDir);
+        $file = $tempDir . '/EmptyCommand.php';
+        touch($file);
+
+        $analyzer = new CommandAnalyzer(['scan_paths' => [$tempDir]]);
+        $results = $analyzer->analyze();
+
+        $this->assertCount(0, $results);
+
+        unlink($file);
+        rmdir($tempDir);
+    }
+
+    public function test_it_filters_scan_paths_for_console_keyword()
+    {
+        $tempDir = sys_get_temp_dir() . '/view_test_Console_' . uniqid();
+        $otherDir = sys_get_temp_dir() . '/view_test_Other_' . uniqid();
+        mkdir($tempDir);
+        mkdir($otherDir);
+
+        $file1 = $tempDir . '/TestCommand.php';
+        $file2 = $otherDir . '/OtherFile.php';
+        file_put_contents($file1, '<?php view("test1");');
+        file_put_contents($file2, '<?php view("test2");');
+
+        // Should only pick up $tempDir because it contains "Console" (simulated via $this->config context)
+        // Actually, the analyzer filters by checking if the path string contains 'Console'
+        $analyzer = new CommandAnalyzer(['scan_paths' => [$tempDir, $otherDir]]);
+        $results = $analyzer->analyze();
+
+        $viewNames = $results->pluck('viewName')->toArray();
+        $this->assertContains('test1', $viewNames);
+        $this->assertNotContains('test2', $viewNames);
+
+        unlink($file1);
+        unlink($file2);
+        rmdir($tempDir);
+        rmdir($otherDir);
+    }
+
+    public function test_it_uses_default_app_path_when_no_console_paths_found()
+    {
+        $analyzer = new CommandAnalyzer(['scan_paths' => []]);
+        $results = $analyzer->analyze();
+        $this->assertInstanceOf(\Illuminate\Support\Collection::class, $results);
+    }
 }

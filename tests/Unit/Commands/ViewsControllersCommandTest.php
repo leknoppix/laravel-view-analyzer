@@ -86,4 +86,44 @@ class ViewsControllersCommandTest extends TestCase
         $this->assertStringContainsString('"controller": "AdminController"', $content);
         $this->assertStringNotContainsString('"controller": "HomeController"', $content);
     }
+
+    public function test_it_supports_different_formats()
+    {
+        $ref = new ViewReference('pages.home', 'HomeController.php', 10, 'index', 'controller');
+        $usage = new ViewUsage('pages.home', collect([$ref]), null, 1, ['controller']);
+        $result = new AnalysisResult(1, collect([$usage]), collect(), collect());
+
+        $this->mock(ViewAnalyzer::class, fn ($mock) => $mock->shouldReceive('analyze')->andReturn($result));
+
+        // Test Table (default)
+        $this->artisan('views:controllers')->assertExitCode(0);
+
+        // Test CSV
+        $this->artisan('views:controllers', ['--format' => 'csv'])->assertExitCode(0);
+
+        // Test Tree
+        $this->artisan('views:controllers', ['--format' => 'tree'])->assertExitCode(0);
+    }
+
+    public function test_it_handles_empty_controllers_with_option()
+    {
+        $result = new AnalysisResult(0, collect(), collect(), collect());
+        $this->mock(ViewAnalyzer::class, fn ($mock) => $mock->shouldReceive('analyze')->andReturn($result));
+
+        $this->artisan('views:controllers', ['--include-empty' => true])
+            ->expectsOutputToContain('Total controllers: 0')
+            ->assertExitCode(0);
+    }
+
+    public function test_it_groups_by_namespace()
+    {
+        $ref = new ViewReference('pages.home', 'HomeController.php', 10, 'index', 'controller');
+        $usage = new ViewUsage('pages.home', collect([$ref]), null, 1, ['controller']);
+        $result = new AnalysisResult(1, collect([$usage]), collect(), collect());
+
+        $this->mock(ViewAnalyzer::class, fn ($mock) => $mock->shouldReceive('analyze')->andReturn($result));
+
+        $this->artisan('views:controllers', ['--group-by-namespace' => true])
+            ->assertExitCode(0);
+    }
 }

@@ -89,4 +89,14 @@ class ViewsAnalyzeCommandTest extends TestCase
             ->expectsOutputToContain('"View Name",Status,"Reference Count","File Path",Types') // CSV Header
             ->assertExitCode(0);
     }
+
+    public function test_it_exports_to_html_format()
+    {
+        $result = new AnalysisResult(1, collect(), collect(), collect());
+        $this->mock(ViewAnalyzer::class, fn ($mock) => $mock->shouldReceive('analyze')->andReturn($result));
+
+        $this->artisan('views:analyze', ['--format' => 'html'])
+            ->expectsOutputToContain('<!DOCTYPE html>')
+            ->assertExitCode(0);
+    }
 }

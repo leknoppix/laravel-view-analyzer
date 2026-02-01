@@ -86,4 +86,52 @@ PHP;
         $this->assertTrue($this->analyzer->isEnabled());
         $this->assertEquals(32, $this->analyzer->getPriority());
     }
+
+    public function test_it_respects_disabled_config()
+    {
+        $analyzer = new NotificationAnalyzer(['analyzers' => ['notification' => ['enabled' => false]]]);
+        $this->assertFalse($analyzer->isEnabled());
+    }
+
+    public function test_it_skips_non_notification_paths()
+    {
+        $analyzer = new NotificationAnalyzer(['scan_paths' => ['/some/random/path']]);
+        $results = $analyzer->analyze();
+        $this->assertCount(0, $results);
+    }
+
+    public function test_it_returns_empty_if_default_directory_missing(): void
+    {
+        $path = app_path('Notifications');
+        if (is_dir($path)) {
+            $files = glob($path . '/*');
+            foreach ($files as $file) {
+                if (is_file($file)) {
+                    unlink($file);
+                }
+            }
+            rmdir($path);
+        }
+
+        $analyzer = new NotificationAnalyzer(['scan_paths' => []]);
+        $results = $analyzer->analyze();
+
+        $this->assertCount(0, $results);
+    }
+
+    public function test_it_skips_empty_files(): void
+    {
+        $tempDir = sys_get_temp_dir() . '/view_test_Notifications_' . uniqid();
+        mkdir($tempDir);
+        $file = $tempDir . '/EmptyNotification.php';
+        touch($file);
+
+        $analyzer = new NotificationAnalyzer(['scan_paths' => [$tempDir]]);
+        $results = $analyzer->analyze();
+
+        $this->assertCount(0, $results);
+
+        unlink($file);
+        rmdir($tempDir);
+    }
 }

@@ -9,7 +9,7 @@
     <a href="https://packagist.org/packages/leknoppix/laravel-view-analyzer"><img src="https://img.shields.io/packagist/dt/leknoppix/laravel-view-analyzer" alt="Total Downloads"></a>
     <a href="https://packagist.org/packages/leknoppix/laravel-view-analyzer"><img src="https://img.shields.io/packagist/v/leknoppix/laravel-view-analyzer" alt="Latest Stable Version"></a>
     <a href="https://packagist.org/packages/leknoppix/laravel-view-analyzer"><img src="https://img.shields.io/packagist/l/leknoppix/laravel-view-analyzer" alt="License"></a>
-    <a href="https://github.com/leknoppix/laravel-view-analyzer"><img src="https://img.shields.io/badge/coverage-100%25-brightgreen" alt="Test Coverage"></a>
+    <a href="https://github.com/leknoppix/laravel-view-analyzer"><img src="https://img.shields.io/badge/coverage-97%25-brightgreen" alt="Test Coverage"></a>
 </p>
 
 ## About Laravel View Analyzer

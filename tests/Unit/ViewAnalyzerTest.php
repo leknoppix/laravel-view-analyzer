@@ -145,4 +145,34 @@ class ViewAnalyzerTest extends TestCase
         $this->assertCount(1, $unused);
         $this->assertEquals('normal.view', $unused->first()->viewName);
     }
+
+    public function test_it_returns_statistics()
+    {
+        $analyzer = new ViewAnalyzer();
+        $stats = $analyzer->getStatistics();
+
+        $this->assertArrayHasKey('total_references', $stats);
+        $this->assertArrayHasKey('by_type', $stats);
+        $this->assertEquals(0, $stats['total_references']);
+    }
+
+    public function test_it_finds_used_views_directly()
+    {
+        $mockAnalyzer = Mockery::mock(AnalyzerInterface::class);
+        $mockAnalyzer->shouldReceive('isEnabled')->andReturn(true);
+        $mockAnalyzer->shouldReceive('getPriority')->andReturn(10);
+        $mockAnalyzer->shouldReceive('analyze')->andReturn(collect([
+            new ViewReference('test.view', 'file.php', 1, 'ctx', 'test'),
+        ]));
+
+        $analyzer = new ViewAnalyzer();
+        $reflection = new \ReflectionClass($analyzer);
+        $property = $reflection->getProperty('analyzers');
+        $property->setAccessible(true);
+        $property->setValue($analyzer, collect([$mockAnalyzer]));
+
+        $used = $analyzer->findUsedViews();
+        $this->assertCount(1, $used);
+        $this->assertEquals('test.view', $used->first()->viewName);
+    }
 }

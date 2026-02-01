@@ -37,6 +37,18 @@ class FileScannerTest extends TestCase
         $this->assertEquals([], $scanner->scan());
     }
 
+    public function test_it_returns_empty_if_file_not_readable()
+    {
+        touch($this->tempFile);
+        chmod($this->tempFile, 0000);
+        $scanner = new FileScanner($this->tempFile);
+
+        $this->assertEquals([], $scanner->scan());
+        $this->assertNull($scanner->readContent());
+
+        chmod($this->tempFile, 0644); // Restore for cleanup
+    }
+
     public function test_it_reads_content()
     {
         $content = '<?php echo "hello";';
@@ -98,6 +110,13 @@ PHP;
         file_put_contents($this->tempFile, $content);
         $scanner = new FileScanner($this->tempFile);
 
+        $this->assertEquals('unknown', $scanner->getMethodAtPosition(10));
+    }
+
+    public function test_it_handles_missing_content_for_line_numbers_and_methods()
+    {
+        $scanner = new FileScanner('/non/existent/file.php');
+        $this->assertEquals(0, $scanner->getLineNumber(10));
         $this->assertEquals('unknown', $scanner->getMethodAtPosition(10));
     }
 }

@@ -67,4 +67,46 @@ PHP;
 
         $this->assertTrue($results->contains('viewName', 'components.alert-v2'));
     }
+
+    public function test_it_has_correct_name()
+    {
+        $analyzer = new ComponentAnalyzer();
+        $this->assertEquals('Component Analyzer', $analyzer->getName());
+    }
+
+    public function test_it_has_correct_priority()
+    {
+        $analyzer = new ComponentAnalyzer();
+        $this->assertEquals(40, $analyzer->getPriority());
+    }
+
+    public function test_it_respects_enabled_config()
+    {
+        $analyzer = new ComponentAnalyzer(['analyzers' => ['component' => ['enabled' => false]]]);
+        $this->assertFalse($analyzer->isEnabled());
+
+        $analyzer = new ComponentAnalyzer(['analyzers' => ['component' => ['enabled' => true]]]);
+        $this->assertTrue($analyzer->isEnabled());
+    }
+
+    public function test_it_returns_empty_if_directory_missing()
+    {
+        $componentPath = app_path('View/Components');
+        if (is_dir($componentPath)) {
+            $files = glob($componentPath . '/*');
+            foreach ($files as $file) {
+                if (is_file($file)) {
+                    unlink($file);
+                }
+            }
+            // Supprimer le dossier parent aussi si vide
+            @rmdir($componentPath);
+            @rmdir(app_path('View'));
+        }
+
+        $analyzer = new ComponentAnalyzer();
+        $results = $analyzer->analyze();
+
+        $this->assertCount(0, $results);
+    }
 }

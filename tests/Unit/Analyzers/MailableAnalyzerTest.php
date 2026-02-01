@@ -113,4 +113,57 @@ PHP;
 
         $this->assertTrue($results->contains('viewName', 'emails.positional'), 'Should detect view as first positional argument of Content');
     }
+
+    public function test_it_has_correct_name()
+    {
+        $analyzer = new MailableAnalyzer();
+        $this->assertEquals('Mailable Analyzer', $analyzer->getName());
+    }
+
+    public function test_it_has_correct_priority()
+    {
+        $analyzer = new MailableAnalyzer();
+        $this->assertEquals(30, $analyzer->getPriority());
+    }
+
+    public function test_it_respects_enabled_config()
+    {
+        $analyzer = new MailableAnalyzer(['analyzers' => ['mailable' => ['enabled' => false]]]);
+        $this->assertFalse($analyzer->isEnabled());
+
+        $analyzer = new MailableAnalyzer(['analyzers' => ['mailable' => ['enabled' => true]]]);
+        $this->assertTrue($analyzer->isEnabled());
+    }
+
+    public function test_it_skips_empty_files(): void
+    {
+        $file = app_path('Mail/EmptyMail.php');
+        touch($file);
+
+        $analyzer = new MailableAnalyzer();
+        $results = $analyzer->analyze();
+
+        $this->assertCount(0, $results);
+
+        unlink($file);
+    }
+
+    public function test_it_returns_empty_if_mail_directory_does_not_exist(): void
+    {
+        $mailPath = app_path('Mail');
+        if (is_dir($mailPath)) {
+            $files = glob($mailPath . '/*');
+            foreach ($files as $file) {
+                if (is_file($file)) {
+                    unlink($file);
+                }
+            }
+            rmdir($mailPath);
+        }
+
+        $analyzer = new MailableAnalyzer();
+        $results = $analyzer->analyze();
+
+        $this->assertCount(0, $results);
+    }
 }
