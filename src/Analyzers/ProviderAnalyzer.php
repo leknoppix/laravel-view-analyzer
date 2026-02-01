@@ -27,12 +27,8 @@ class ProviderAnalyzer implements AnalyzerInterface
         $scanPaths = $this->config['scan_paths'] ?? [];
 
         if (empty($scanPaths)) {
-            try {
-                if (function_exists('app_path')) {
-                    $scanPaths[] = $this->config['providers_path'] ?? app_path('Providers');
-                }
-            } catch (\Throwable $e) {
-                // Fallback or ignore if app_path is not available or fails
+            if (function_exists('app_path')) {
+                $scanPaths[] = $this->config['providers_path'] ?? app_path('Providers');
             }
         }
 
