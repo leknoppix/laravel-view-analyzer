@@ -46,11 +46,10 @@ class RouteAnalyzerTest extends TestCase
 
     public function test_it_returns_empty_if_routes_directory_missing(): void
     {
-        // On vérifie simplement que l'analyseur retourne une collection
-        // même si le dossier n'existe pas
-        $analyzer = new RouteAnalyzer();
+        $analyzer = new RouteAnalyzer(['routes_path' => '/non/existent/routes']);
         $results = $analyzer->analyze();
 
+        $this->assertCount(0, $results);
         $this->assertInstanceOf(\Illuminate\Support\Collection::class, $results);
     }
 
@@ -60,9 +59,8 @@ class RouteAnalyzerTest extends TestCase
 <?php
 use Illuminate\Support\Facades\Route;
 
-// Route::view handles its own detection, but detector might also pick up view()
-// though Route::view doesn't use the helper. Let's force a scenario.
-Route::view('/', 'welcome');
+// On met les deux sur la même ligne pour forcer la collision
+Route::view('/', 'welcome'); view('welcome');
 PHP;
         $tempRoutePath = base_path('routes/double_test.php');
         file_put_contents($tempRoutePath, $content);
@@ -70,7 +68,7 @@ PHP;
         $analyzer = new RouteAnalyzer();
         $results = $analyzer->analyze();
 
-        // On vérifie qu'il n'y a qu'une seule référence pour 'welcome'
+        // On vérifie qu'il n'y a qu'une seule référence pour 'welcome' sur cette ligne
         $welcomeRefs = $results->where('viewName', 'welcome');
         $this->assertCount(1, $welcomeRefs);
 
@@ -141,5 +139,49 @@ PHP;
         $this->assertCount(0, $results);
 
         unlink($tempRoutePath);
+    }
+
+    public function test_it_skips_unreadable_files()
+    {
+        $tempDir = sys_get_temp_dir() . '/view_test_routes_unreadable_' . uniqid();
+        mkdir($tempDir);
+        $file = $tempDir . '/UnreadableRoute.php';
+        touch($file);
+        chmod($file, 0000);
+
+        $analyzer = new RouteAnalyzer(['routes_path' => $tempDir]);
+        $results = $analyzer->analyze();
+
+        $this->assertCount(0, $results);
+
+        chmod($file, 0644);
+        unlink($file);
+        rmdir($tempDir);
+    }
+
+    public function test_it_returns_empty_if_routes_directory_exists_but_is_empty(): void
+    {
+        $tempDir = sys_get_temp_dir() . '/view_test_routes_empty_dir_' . uniqid();
+        mkdir($tempDir);
+
+        $analyzer = new RouteAnalyzer(['routes_path' => $tempDir]);
+        $results = $analyzer->analyze();
+
+        $this->assertCount(0, $results);
+        rmdir($tempDir);
+    }
+
+    public function test_it_uses_default_app_path_when_no_config_provided()
+    {
+        // Enforce base_path('routes') existence for this test
+        $path = base_path('routes');
+        if (!is_dir($path)) {
+            mkdir($path, 0777, true);
+        }
+
+        $analyzer = new RouteAnalyzer();
+        $results = $analyzer->analyze();
+
+        $this->assertInstanceOf(\Illuminate\Support\Collection::class, $results);
     }
 }

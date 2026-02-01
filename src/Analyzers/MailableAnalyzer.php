@@ -24,7 +24,7 @@ class MailableAnalyzer implements AnalyzerInterface
     public function analyze(): Collection
     {
         $references = collect();
-        $mailPath = app_path('Mail');
+        $mailPath = $this->config['mail_path'] ?? app_path('Mail');
         $excludePaths = $this->config['exclude_paths'] ?? [];
 
         if (! is_dir($mailPath)) {

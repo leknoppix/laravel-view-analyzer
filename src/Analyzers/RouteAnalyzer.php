@@ -24,7 +24,7 @@ class RouteAnalyzer implements AnalyzerInterface
     public function analyze(): Collection
     {
         $references = collect();
-        $routesPath = base_path('routes');
+        $routesPath = $this->config['routes_path'] ?? base_path('routes');
         $excludePaths = $this->config['exclude_paths'] ?? [];
 
         if (! is_dir($routesPath)) {

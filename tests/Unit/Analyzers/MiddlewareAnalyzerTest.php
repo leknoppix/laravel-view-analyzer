@@ -114,4 +114,18 @@ PHP;
         unlink($file);
         rmdir($tempDir);
     }
+
+    public function test_it_skips_paths_that_are_not_directories()
+    {
+        $tempFile = sys_get_temp_dir() . '/SomeMiddlewareFile.php';
+        touch($tempFile);
+
+        // Path exists but is a file, not a directory
+        $analyzer = new MiddlewareAnalyzer(['scan_paths' => [$tempFile]]);
+        $results = $analyzer->analyze();
+
+        $this->assertCount(0, $results);
+
+        unlink($tempFile);
+    }
 }

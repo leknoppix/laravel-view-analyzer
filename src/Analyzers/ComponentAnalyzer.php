@@ -24,7 +24,7 @@ class ComponentAnalyzer implements AnalyzerInterface
     public function analyze(): Collection
     {
         $references = collect();
-        $componentPath = app_path('View/Components');
+        $componentPath = $this->config['component_path'] ?? app_path('View/Components');
         $excludePaths = $this->config['exclude_paths'] ?? [];
 
         if (! is_dir($componentPath)) {

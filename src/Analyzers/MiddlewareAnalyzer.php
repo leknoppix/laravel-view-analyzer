@@ -27,7 +27,7 @@ class MiddlewareAnalyzer implements AnalyzerInterface
         });
 
         if (empty($middlewarePaths) && function_exists('app_path')) {
-            $defaultPath = app_path('Http/Middleware');
+            $defaultPath = $this->config['middleware_path'] ?? app_path('Http/Middleware');
             if (is_dir($defaultPath)) {
                 $middlewarePaths[] = $defaultPath;
             }

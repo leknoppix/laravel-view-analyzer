@@ -61,8 +61,52 @@ class ProviderAnalyzerTest extends TestCase
     {
         // On vérifie que l'analyseur ne plante pas et retourne une collection
         // même si la config est vide (il tentera d'utiliser app_path)
-        $analyzer = new ProviderAnalyzer(['scan_paths' => []]);
+        $analyzer = new ProviderAnalyzer(['providers_path' => '/non/existent/providers']);
         $results = $analyzer->analyze();
+        $this->assertCount(0, $results);
+    }
+
+    public function test_it_skips_unreadable_files()
+    {
+        $tempDir = sys_get_temp_dir() . '/view-test-unreadable-' . uniqid();
+        mkdir($tempDir);
+        $file = $tempDir . '/UnreadableServiceProvider.php';
+        touch($file);
+        chmod($file, 0000);
+
+        $analyzer = new ProviderAnalyzer(['scan_paths' => [$tempDir]]);
+        $results = $analyzer->analyze();
+
+        $this->assertCount(0, $results);
+
+        chmod($file, 0644);
+        unlink($file);
+        rmdir($tempDir);
+    }
+
+    public function test_it_returns_empty_if_providers_directory_exists_but_is_empty(): void
+    {
+        $tempDir = sys_get_temp_dir() . '/view_test_Providers_empty_dir_' . uniqid();
+        mkdir($tempDir);
+
+        $analyzer = new ProviderAnalyzer(['providers_path' => $tempDir]);
+        $results = $analyzer->analyze();
+
+        $this->assertCount(0, $results);
+        rmdir($tempDir);
+    }
+
+    public function test_it_uses_default_app_path_when_no_config_provided()
+    {
+        // On s'assure qu'un dossier de providers existe
+        $path = app_path('Providers');
+        if (!is_dir($path)) {
+            mkdir($path, 0777, true);
+        }
+
+        $analyzer = new ProviderAnalyzer();
+        $results = $analyzer->analyze();
+
         $this->assertInstanceOf(\Illuminate\Support\Collection::class, $results);
     }
 }

@@ -91,22 +91,66 @@ PHP;
 
     public function test_it_returns_empty_if_directory_missing()
     {
-        $componentPath = app_path('View/Components');
-        if (is_dir($componentPath)) {
-            $files = glob($componentPath . '/*');
-            foreach ($files as $file) {
-                if (is_file($file)) {
-                    unlink($file);
-                }
-            }
-            // Supprimer le dossier parent aussi si vide
-            @rmdir($componentPath);
-            @rmdir(app_path('View'));
-        }
+        // On utilise la nouvelle clé 'component_path' pour pointer vers un dossier inexistant
+        $analyzer = new ComponentAnalyzer(['component_path' => '/non/existent/components']);
+        $results = $analyzer->analyze();
+
+        $this->assertCount(0, $results);
+    }
+
+    public function test_it_skips_unreadable_files()
+    {
+        $tempDir = sys_get_temp_dir() . '/view_test_comp_unreadable_' . uniqid();
+        mkdir($tempDir);
+        $file = $tempDir . '/UnreadableComponent.php';
+        touch($file);
+        chmod($file, 0000);
+
+        $analyzer = new ComponentAnalyzer(['component_path' => $tempDir]);
+        $results = $analyzer->analyze();
+
+        $this->assertCount(0, $results);
+
+        chmod($file, 0644);
+        unlink($file);
+        rmdir($tempDir);
+    }
+
+    public function test_it_skips_empty_component_files()
+    {
+        $path = app_path('View/Components/EmptyComp.php');
+        touch($path);
 
         $analyzer = new ComponentAnalyzer();
         $results = $analyzer->analyze();
 
         $this->assertCount(0, $results);
+        unlink($path);
+    }
+
+    public function test_it_returns_empty_collection_if_directory_exists_but_is_empty(): void
+    {
+        $tempDir = sys_get_temp_dir() . '/view_test_comp_empty_dir_' . uniqid();
+        mkdir($tempDir);
+
+        $analyzer = new ComponentAnalyzer(['component_path' => $tempDir]);
+        $results = $analyzer->analyze();
+
+        $this->assertCount(0, $results);
+        rmdir($tempDir);
+    }
+
+    public function test_it_uses_default_app_path_when_no_config_provided()
+    {
+        // On s'assure qu'un dossier de composants existe dans l'environnement Orchestra
+        $path = app_path('View/Components');
+        if (!is_dir($path)) {
+            mkdir($path, 0777, true);
+        }
+
+        $analyzer = new ComponentAnalyzer();
+        $results = $analyzer->analyze();
+
+        $this->assertInstanceOf(\Illuminate\Support\Collection::class, $results);
     }
 }

@@ -31,7 +31,7 @@ class NotificationAnalyzer implements AnalyzerInterface
         });
 
         if (empty($notificationPaths) && function_exists('app_path')) {
-            $defaultPath = app_path('Notifications');
+            $defaultPath = $this->config['notifications_path'] ?? app_path('Notifications');
             if (is_dir($defaultPath)) {
                 $notificationPaths[] = $defaultPath;
             }
