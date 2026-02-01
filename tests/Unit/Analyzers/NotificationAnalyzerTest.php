@@ -183,7 +183,7 @@ PHP;
     public function test_it_uses_default_app_path_when_no_config_provided()
     {
         $path = app_path('Notifications');
-        if (!is_dir($path)) {
+        if (! is_dir($path)) {
             mkdir($path, 0777, true);
         }
 

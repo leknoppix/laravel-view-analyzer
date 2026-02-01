@@ -100,7 +100,7 @@ class ProviderAnalyzerTest extends TestCase
     {
         // On s'assure qu'un dossier de providers existe
         $path = app_path('Providers');
-        if (!is_dir($path)) {
+        if (! is_dir($path)) {
             mkdir($path, 0777, true);
         }
 

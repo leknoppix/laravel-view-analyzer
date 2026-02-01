@@ -2,10 +2,10 @@
 
 namespace LaravelViewAnalyzer\Tests\Unit\Http;
 
-use LaravelViewAnalyzer\Http\Controllers\ViewAnalyzerController;
-use LaravelViewAnalyzer\Tests\TestCase;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Route;
+use LaravelViewAnalyzer\Http\Controllers\ViewAnalyzerController;
+use LaravelViewAnalyzer\Tests\TestCase;
 
 class ViewAnalyzerControllerTest extends TestCase
 {

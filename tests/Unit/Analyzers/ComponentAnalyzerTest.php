@@ -144,7 +144,7 @@ PHP;
     {
         // On s'assure qu'un dossier de composants existe dans l'environnement Orchestra
         $path = app_path('View/Components');
-        if (!is_dir($path)) {
+        if (! is_dir($path)) {
             mkdir($path, 0777, true);
         }
 

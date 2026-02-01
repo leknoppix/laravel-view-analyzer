@@ -175,7 +175,7 @@ PHP;
     {
         // Enforce base_path('routes') existence for this test
         $path = base_path('routes');
-        if (!is_dir($path)) {
+        if (! is_dir($path)) {
             mkdir($path, 0777, true);
         }
 
